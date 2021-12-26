@@ -8,6 +8,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.validator.constraints.Range;
 import repository.impl.LabWorkRepoImpl;
 import service.impl.LabWorkServiceImpl;
+import util.xml.AnyXML;
 import util.xml.XMLArray;
 import util.xml.XMLParser;
 
@@ -25,12 +26,14 @@ import java.util.Map;
 public class TestController extends HttpServlet {
     LabWorkServiceImpl labWorkService;
     SessionFactory sessionFactory;
+
     @Override
     public void init() throws ServletException {
         sessionFactory = new Configuration().configure().buildSessionFactory();
         labWorkService = new LabWorkServiceImpl(sessionFactory);
         super.init();
     }
+
     //POST/elements/
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -41,8 +44,8 @@ public class TestController extends HttpServlet {
             System.out.println(labWork.toString());
             labWorkService.save(labWork);
 
-        }catch(Exception e){
-            resp.sendError(405,"Недопустимый элемент");
+        } catch (Exception e) {
+            resp.sendError(405, "Недопустимый элемент");
         }
 
     }
@@ -76,36 +79,36 @@ public class TestController extends HttpServlet {
             if (pathParams != null && pathParams.length > 1 && !pathParams[1].equals("")) {
                 labWorkService.delete(Integer.parseInt(pathParams[1]));
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             resp.sendError(404, "Объект не найден!");
         }
     }
+
     //GET/elements/sortField/pageNumber
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        if(pathInfo == null || pathInfo.equals("/")){
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-        String[] splits = pathInfo.split("/");
-        if(splits.length != 4) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
+        String firstStr = req.getParameter("first");
+        String amountStr = req.getParameter("amount");
+        String sortfield = req.getParameter("sortfield");
+
         try {
-            int first = Integer.valueOf(splits[1]);
-            int amount = Integer.valueOf(splits[2]);
-            String sortfield = splits[3];
+            int first = Integer.valueOf(firstStr);
+            int amount = Integer.valueOf(amountStr);
             XMLArray arr = new XMLArray();
-            arr.labWorks = labWorkService.get(first,amount, sortfield);
+            AnyXML total = new AnyXML();
+            arr.labWorks = labWorkService.get(first, amount, sortfield);
+            total.xml = String.valueOf(labWorkService.amount());
             XMLParser<XMLArray> parser = new XMLParser<>(XMLArray.class);
+            XMLParser<AnyXML> totalParser = new XMLParser<>(AnyXML.class);
+            resp.getOutputStream().print(totalParser.objectToXml(total));
             resp.getOutputStream().print(parser.objectToXml(arr));
             resp.setStatus(200);
-        }catch (Exception e){
-            resp.sendError(404, "Объект не найден!");
+        } catch (Exception e) {
+            resp.sendError(404, "Объекты не найдены!");
         }
     }
+
     //PUT/elements
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

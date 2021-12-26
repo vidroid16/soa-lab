@@ -22,7 +22,7 @@ public class LabWorkRepoImpl implements LabWorkRepo {
     }
 
     @Override
-    public void save(LabWork labWork){
+    public void save(LabWork labWork) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -45,7 +45,7 @@ public class LabWorkRepoImpl implements LabWorkRepo {
             session.update(labWork);
             transaction.commit();
             session.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             transaction.rollback();
             session.close();
             throw e;
@@ -58,7 +58,7 @@ public class LabWorkRepoImpl implements LabWorkRepo {
         Transaction transaction = session.beginTransaction();
 
         try {
-            LabWork lab = (LabWork) session.load(LabWork.class,id);
+            LabWork lab = (LabWork) session.load(LabWork.class, id);
             session.delete(lab);
             transaction.commit();
             session.close();
@@ -74,39 +74,35 @@ public class LabWorkRepoImpl implements LabWorkRepo {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         ArrayList<LabWork> labs = new ArrayList<>();
-        if (sortfield.equals("x")||sortfield.equals("y")) sortfield = "co."+sortfield;
-        if(sortfield.equals("lecture_hours")) sortfield = "di."+sortfield;
-        if(sortfield.equals("dname")) sortfield = "di.name";
+        if (sortfield.equals("x") || sortfield.equals("y")) sortfield = "co." + sortfield;
+        if (sortfield.equals("lecture_hours")) sortfield = "di." + sortfield;
+        if (sortfield.equals("dname")) sortfield = "di.name";
         try {
-            if(amount > 0){
-                if(sortfield.startsWith("co.")){
+            if (amount > 0) {
+                if (sortfield.startsWith("co.")) {
                     labs = (ArrayList<LabWork>) session.createSQLQuery(
-                            "SELECT * FROM labwork JOIN coordinates AS co on labwork.coordinates_id = co.coordinates_id WHERE labwork.lab_id > "+first+" ORDER BY "+sortfield+" LIMIT "+amount+";"
+                            "SELECT * FROM labwork JOIN coordinates AS co on labwork.coordinates_id = co.coordinates_id WHERE labwork.lab_id > " + first + " ORDER BY " + sortfield + " LIMIT " + amount + ";"
                     ).addEntity(LabWork.class).list();
-                }
-                else if(sortfield.startsWith("di.")){
+                } else if (sortfield.startsWith("di.")) {
                     labs = (ArrayList<LabWork>) session.createSQLQuery(
-                            "SELECT * FROM labwork JOIN discipline AS di on labwork.discipline_id = di.discipline_id WHERE labwork.lab_id > "+first+" ORDER BY "+sortfield+" LIMIT "+amount+";"
+                            "SELECT * FROM labwork JOIN discipline AS di on labwork.discipline_id = di.discipline_id WHERE labwork.lab_id > " + first + " ORDER BY " + sortfield + " LIMIT " + amount + ";"
                     ).addEntity(LabWork.class).list();
-                }
-                else {
+                } else {
                     labs = (ArrayList<LabWork>) session.createSQLQuery(
-                            "SELECT * FROM labwork WHERE lab_id > "+first+" ORDER BY "+sortfield+" LIMIT "+amount+";"
+                            "SELECT * FROM labwork WHERE lab_id > " + first + " ORDER BY " + sortfield + " LIMIT " + amount + ";"
                     ).addEntity(LabWork.class).list();
                 }
             }
-            if (amount<0){
-                if(sortfield.startsWith("co.")){
+            if (amount < 0) {
+                if (sortfield.startsWith("co.")) {
                     labs = (ArrayList<LabWork>) session.createSQLQuery(
-                            "SELECT * FROM labwork JOIN coordinates AS co on labwork.coordinates_id = co.coordinates_id WHERE labwork.lab_id < "+first+" ORDER BY "+sortfield+" DESC LIMIT "+Math.abs(amount)+";"
+                            "SELECT * FROM labwork JOIN coordinates AS co on labwork.coordinates_id = co.coordinates_id WHERE labwork.lab_id < " + first + " ORDER BY " + sortfield + " DESC LIMIT " + Math.abs(amount) + ";"
                     ).addEntity(LabWork.class).list();
-                }
-                else if(sortfield.startsWith("di.")){
+                } else if (sortfield.startsWith("di.")) {
                     labs = (ArrayList<LabWork>) session.createSQLQuery(
-                            "SELECT * FROM labwork JOIN discipline AS di on labwork.discipline_id = di.discipline_id WHERE labwork.lab_id < "+first+" ORDER BY "+sortfield+" DESC LIMIT "+Math.abs(amount)+";"
+                            "SELECT * FROM labwork JOIN discipline AS di on labwork.discipline_id = di.discipline_id WHERE labwork.lab_id < " + first + " ORDER BY " + sortfield + " DESC LIMIT " + Math.abs(amount) + ";"
                     ).addEntity(LabWork.class).list();
-                }
-                else {
+                } else {
                     labs = (ArrayList<LabWork>) session.createSQLQuery(
                             "SELECT * FROM labwork WHERE lab_id < " + first + "ORDER BY " + sortfield + " DESC LIMIT " + Math.abs(amount) + ";"
                     ).addEntity(LabWork.class).list();
@@ -119,14 +115,47 @@ public class LabWorkRepoImpl implements LabWorkRepo {
         }
         return labs;
     }
+
     @Override
-    public ArrayList<LabWork> getStartedWith(String str){
+    public ArrayList<LabWork> getStartedWith(String str) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         ArrayList<LabWork> labs = new ArrayList<>();
         try {
-                labs = (ArrayList<LabWork>) session.createSQLQuery(
-                        "select * from labwork where name like '"+str+"%'").addEntity(LabWork.class).list();
+            labs = (ArrayList<LabWork>) session.createSQLQuery(
+                    "select * from labwork where name like '" + str + "%'").addEntity(LabWork.class).list();
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        }
+        return labs;
+    }
+
+    @Override
+    public int getAllWhereMinLowerThan(int a) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        ArrayList<LabWork> labs = new ArrayList<>();
+        try {
+            labs = (ArrayList<LabWork>) session.createSQLQuery(
+                    "select * from labwork where minimal_point <" + a + ";").addEntity(LabWork.class).list();
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        }
+        return labs.size();
+    }
+
+    @Override
+    public ArrayList<LabWork> getAllWhereMaxHigherThan(float a) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        ArrayList<LabWork> labs = new ArrayList<>();
+        try {
+            labs = (ArrayList<LabWork>) session.createSQLQuery(
+                    "select * from labwork where maximal_point >" + a + " limit 1;").addEntity(LabWork.class).list();
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
@@ -142,7 +171,7 @@ public class LabWorkRepoImpl implements LabWorkRepo {
         ArrayList<LabWork> labs = new ArrayList<>();
         try {
             labs = (ArrayList<LabWork>) session.createSQLQuery(
-                    "select * from labwork where maximal_point <"+a+";");
+                    "select * from labwork where maximal_point <" + a + ";");
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
@@ -167,27 +196,12 @@ public class LabWorkRepoImpl implements LabWorkRepo {
     }
 
     @Override
-    public Long amount() {
+    public int amount() {
         Session session = sessionFactory.openSession();
-        Long count = 0L;
-
-        try {
-            Query query = session.createSQLQuery("Select count(*) from labwork");
-
-            final List<BigInteger> obj = query.list();
-            for (BigInteger l : obj) {
-                if (l != null) {
-                    count = l.longValue();
-                }
-            }
-        } catch (HibernateException e) {
-            e.printStackTrace();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
-
-        return count;
+        ArrayList<LabWork> labs = new ArrayList<>();
+        labs = (ArrayList<LabWork>) session.createSQLQuery(
+                "SELECT * FROM labwork").addEntity(LabWork.class).list();
+        return labs.size();
     }
+
 }

@@ -29,20 +29,20 @@ public class LabWork {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "COORDINATES_ID", nullable = false)
     private Coordinates coordinates; //Поле не может быть null
-    @Column(name="CREATION_DATE", nullable = false)
+    @Column(name = "CREATION_DATE", nullable = false)
     @XmlJavaTypeAdapter(ZonedDateTimeAdapter.class)
     private java.time.ZonedDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
-    @Column(name="MINIMAL_POINT", nullable = false)
+    @Column(name = "MINIMAL_POINT", nullable = false)
     @Range(min = 0l, message = "Please select positive numbers Only")
     private int minimalPoint; //Значение поля должно быть больше 0
-    @Column(name="MAXIMAL_POINT", nullable = false)
+    @Column(name = "MAXIMAL_POINT", nullable = false)
     @Range(min = 0, message = "Please select positive numbers Only")
     private float maximumPoint; //Значение поля должно быть больше 0
-    @Column(name="AVERAGE_POINT", nullable = false)
+    @Column(name = "AVERAGE_POINT", nullable = false)
     private Long averagePoint; //Поле не может быть null, Значение поля должно быть больше 0
     @Transient
     private Difficulty difficulty;//Поле может быть null
-    @Column(name="DIFFICULTY", nullable = false)
+    @Column(name = "DIFFICULTY", nullable = false)
     private String difficultyName;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "DISCIPLINE_ID", nullable = false)
@@ -59,12 +59,14 @@ public class LabWork {
         this.discipline = discipline;
         this.creationDate = ZonedDateTime.now();
     }
+
     @PrePersist
     public void prePersist() {
-        if (minimalPoint <= 0 || maximumPoint<=0 || averagePoint<=0) {
+        if (minimalPoint <= 0 || maximumPoint <= 0 || averagePoint <= 0) {
             throw new ValidationException("Points must be >0");
         }
     }
+
     @Override
     public String toString() {
         return "LabWork{" +

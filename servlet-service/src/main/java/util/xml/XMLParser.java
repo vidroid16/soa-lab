@@ -7,14 +7,14 @@ import dao.LabWork;
 import javax.xml.bind.*;
 import java.io.*;
 
-public class XMLParser<T>{
+public class XMLParser<T> {
     private Class c;
 
     public XMLParser(Class c) {
         this.c = c;
     }
 
-    public T xmlToObject(InputStream stream){
+    public T xmlToObject(InputStream stream) {
 
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(c);
@@ -29,7 +29,7 @@ public class XMLParser<T>{
         }
     }
 
-    public String objectToXml(T object){
+    public String objectToXml(T object) {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(c);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -43,13 +43,13 @@ public class XMLParser<T>{
         }
     }
 
-    public LabWork objectToData(LabWork labWork){
+    public LabWork objectToData(LabWork labWork) {
 
         Coordinates coords = new Coordinates();
         coords.setX(labWork.getCoordinates().getX());
         coords.setY(labWork.getCoordinates().getY());
-        Discipline discipline = new Discipline(labWork.getDiscipline().getName(),labWork.getDiscipline().getLectureHours());
-        return new LabWork(labWork.getName(),coords,labWork.getMinimalPoint(),
-                labWork.getMaximumPoint(),labWork.getAveragePoint(), labWork.getDifficultyName(),discipline);
+        Discipline discipline = new Discipline(labWork.getDiscipline().getName(), labWork.getDiscipline().getLectureHours());
+        return new LabWork(labWork.getName(), coords, labWork.getMinimalPoint(),
+                labWork.getMaximumPoint(), labWork.getAveragePoint(), labWork.getDifficultyName(), discipline);
     }
 }

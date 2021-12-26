@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @XmlElement
 @XmlRootElement
 public class XMLArray {
-   public ArrayList<LabWork> labWorks;
+    public ArrayList<LabWork> labWorks;
 
     public XMLArray() {
         this.labWorks = new ArrayList<>();

@@ -44,36 +44,51 @@ public class LabWorkServiceImpl implements LabWorkService {
 
     @Override
     public ArrayList<LabWork> get(int first, int amount, String sortfield) {
-        return labWorkRepo.get(first,amount,sortfield);
+        return labWorkRepo.get(first, amount, sortfield);
     }
 
     @Override
-    public void generateLab(int a){
+    public void generateLab(int a) {
         Randomizer r = new Randomizer();
         LabWork lab = new LabWork();
-        String dif ="";
+        String dif = "";
         for (int i = 0; i < a; i++) {
-            lab.setAveragePoint(r.randomLong(4,7));
-            lab.setCoordinates(new Coordinates(r.randomLong(1,100), r.randomInt(1,100)));
+            lab.setAveragePoint(r.randomLong(4, 7));
+            lab.setCoordinates(new Coordinates(r.randomLong(1, 100), r.randomInt(1, 100)));
             lab.setCreationDate(ZonedDateTime.now());
-            dif = r.randomString("VERY_EASY","NORMAL","VERY_HARD","INSANE","TERRIBLE");
+            dif = r.randomString("VERY_EASY", "NORMAL", "VERY_HARD", "INSANE", "TERRIBLE");
             lab.setDifficulty(Difficulty.valueOf(dif));
             lab.setDifficultyName(dif);
-            lab.setMaximumPoint(r.randomFloat(7,10));
-            lab.setMinimalPoint(r.randomInt(1,4));
-            lab.setDiscipline(new Discipline(r.randomString("SOA","MSPI","Testing","Math","PIP","BLPS"),r.randomInt(100,200)));
-            lab.setName(lab.getDiscipline().getName()+r.randomInt(1,6));
+            lab.setMaximumPoint(r.randomFloat(7, 10));
+            lab.setMinimalPoint(r.randomInt(1, 4));
+            lab.setDiscipline(new Discipline(r.randomString("SOA", "MSPI", "Testing", "Math", "PIP", "BLPS"), r.randomInt(100, 200)));
+            lab.setName(lab.getDiscipline().getName() + r.randomInt(1, 6));
             labWorkRepo.save(lab);
         }
     }
 
-    public Long amount() {
+    public int amount() {
         return labWorkRepo.amount();
     }
 
     @Override
     public ArrayList<LabWork> getStartedWith(String str) {
         return labWorkRepo.getStartedWith(str);
+    }
+
+    @Override
+    public int getAllWhereMinLowerThan(int a) {
+        return labWorkRepo.getAllWhereMinLowerThan(a);
+    }
+
+    @Override
+    public LabWork deleteWhereMaxHigherThan(float a) {
+        ArrayList<LabWork> labs = labWorkRepo.getAllWhereMaxHigherThan(a);
+        if (labs == null || labs.size() != 1) {
+            return null;
+        }
+        delete(labs.get(0).getId());
+        return labs.get(0);
     }
 
     @Override

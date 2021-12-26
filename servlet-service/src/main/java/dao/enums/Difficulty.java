@@ -14,7 +14,7 @@ public enum Difficulty {
 
     String name;
 
-    public Difficulty getByName(String name){
+    public Difficulty getByName(String name) {
         return Difficulty.valueOf(name);
     }
 }

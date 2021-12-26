@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AnyXML {
     public String xml;
 
-    public AnyXML(){
+    public AnyXML() {
         this.xml = "";
     }
 }

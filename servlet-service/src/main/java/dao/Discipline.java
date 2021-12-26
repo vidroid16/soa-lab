@@ -18,7 +18,7 @@ public class Discipline {
     @Column(name = "LECTURE_HOURS")
     private long lectureHours;
 
-    public Discipline(String name, long lectureHours){
+    public Discipline(String name, long lectureHours) {
         this.name = name;
         this.lectureHours = lectureHours;
     }

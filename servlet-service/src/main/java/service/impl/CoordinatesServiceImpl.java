@@ -13,6 +13,7 @@ public class CoordinatesServiceImpl implements CoordinatesService {
     private final CoordinatesRepository coordinatesRepository;
 
     private static volatile CoordinatesServiceImpl instance;
+
     private CoordinatesServiceImpl() {
         this.coordinatesRepository = new CoordinatesRepositoryImpl();
     }

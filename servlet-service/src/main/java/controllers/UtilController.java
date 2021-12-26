@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
 @WebServlet("/utill")
 public class UtilController extends HttpServlet {
     LabWorkServiceImpl labWorkService;
@@ -34,7 +35,7 @@ public class UtilController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println(labWorkService.amount());
         XMLArray arr = new XMLArray();
-        arr.labWorks = labWorkService.get(7,-4, "lab_id");
+        arr.labWorks = labWorkService.get(7, -4, "lab_id");
         XMLParser<XMLArray> parser = new XMLParser<>(XMLArray.class);
         resp.getOutputStream().print(parser.objectToXml(arr));
     }

@@ -35,17 +35,14 @@ public class DopController extends HttpServlet {
         try {
             XMLParser<AnyXML> parser = new XMLParser<>(AnyXML.class);
             XMLParser<XMLArray> arr = new XMLParser<>(XMLArray.class);
-            AnyXML res = parser.xmlToObject(req.getInputStream());
-            for (int i = 0; i < 100; i++) {
-                System.out.println(res.xml);
-            }
-            ArrayList<LabWork> labs = labWorkService.getStartedWith(res.xml);
+            String str = req.getParameter("str");
+            ArrayList<LabWork> labs = labWorkService.getStartedWith(str);
             XMLArray xmlArray = new XMLArray();
             xmlArray.labWorks = labs;
             String rezult = arr.objectToXml(xmlArray);
             resp.setStatus(200);
             resp.getOutputStream().print(rezult);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             resp.sendError(404, "Объект не найден!");
         }

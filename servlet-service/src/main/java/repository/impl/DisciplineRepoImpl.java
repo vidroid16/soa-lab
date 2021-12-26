@@ -15,7 +15,7 @@ public class DisciplineRepoImpl implements DisciplineRepo {
     }
 
     @Override
-    public void save(Discipline discipline){
+    public void save(Discipline discipline) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
